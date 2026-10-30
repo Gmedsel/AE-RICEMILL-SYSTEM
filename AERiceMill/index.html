@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AE Ricemill System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="rice1.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AE RiceMill">
+<link rel="apple-touch-icon" href="rice1.png">
+
+    <style>
+        /* Panel card wrapper */
+        .monthly-panel {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            padding: 20px 22px;
+            margin-top: 20px;
+        }
+        .monthly-panel h3 {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3a4a;
+        }
+
+        /* Filter row */
+        .mp-filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 14px;
+        }
+        .mp-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mp-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+        .mp-input {
+            font-size: 13px;
+            border: 1px solid #dde3ec;
+            border-radius: 8px;
+            padding: 7px 11px;
+            background: #f8fafc;
+            color: #2d3a4a;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .mp-input:focus { border-color: #4CAF50; }
+
+        /* Buttons */
+        .mp-btn-view {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            background: #4CAF50;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.2s;
+        }
+        .mp-btn-view:hover { background: #388e3c; }
+        .mp-btn-pdf {
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: none;
+            background: #2196F3;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.2s;
+        }
+        .mp-btn-pdf:hover { background: #1565c0; }
+
+        /* Found bar */
+        .mp-found-bar {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 13px;
+            color: #2e7d32;
+            font-weight: 500;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        /* Metric mini cards */
+        .mp-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .mp-metric {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid #eef2f7;
+        }
+        .mp-metric-label {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 4px;
+        }
+        .mp-metric-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .mp-green  { color: #2e7d32; }
+        .mp-blue   { color: #1565c0; }
+        .mp-orange { color: #e65100; }
+        .mp-purple { color: #6a1b9a; }
+
+        /* Tabs */
+        .mp-tab-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .mp-tab-btn {
+            font-size: 12px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid #dde3ec;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.15s;
+        }
+        .mp-tab-btn:hover { background: #f0f4f8; color: #444; }
+        .mp-tab-btn.active {
+            background: #4CAF50;
+            color: #fff;
+            border-color: #4CAF50;
+            font-weight: 600;
+        }
+
+        /* Rows section */
+        .mp-rows-section {
+            border-top: 1px solid #f0f4f8;
+            padding-top: 12px;
+        }
+        .mp-rows-label {
+            font-size: 11px;
+            color: #aaa;
+            margin: 0 0 8px;
+        }
+        .mp-row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px solid #f5f7fa;
+        }
+        .mp-row-item:last-child { border-bottom: none; }
+        .mp-row-name { color: #2d3a4a; }
+        .mp-row-val  { color: #888; font-variant-numeric: tabular-nums; }
+        .mp-pill {
+            font-size: 11px;
+            padding: 2px 9px;
+            border-radius: 99px;
+            font-weight: 500;
+        }
+        .mp-pill-paid    { background: #e8f5e9; color: #2e7d32; }
+        .mp-pill-pending { background: #fff3e0; color: #e65100; }
+        .mp-pill-unpaid  { background: #ffebee; color: #c62828; }
+
+        /* Category summary boxes */
+        .mp-cat-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .mp-cat-box {
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            padding: 8px 14px;
+            min-width: 110px;
+            background: #f8fafc;
+        }
+        .mp-cat-box .lbl { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.04em; }
+        .mp-cat-box .val { font-size: 15px; font-weight: 600; color: #6a1b9a; margin-top: 2px; }
+
+        /* Grand total row */
+        .mp-grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 0;
+            margin-top: 6px;
+            border-top: 1px solid #eef2f7;
+        }
+        .mp-grand-label { font-size: 13px; font-weight: 600; color: #2d3a4a; }
+        .mp-grand-val   { font-size: 16px; font-weight: 700; color: #6a1b9a; }
+
+        .mp-empty-msg {
+            color: #bbb;
+            font-size: 13px;
+            text-align: center;
+            padding: 22px 0;
+        }
+
+        /* Panel header row */
+        .mp-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        @media print {
+    .sidebar, .header, .section-header, .modal-header button,
+    .modal-header .btn, .close-btn { display: none !important; }
+    #soaModal .modal-content { box-shadow: none !important; border: none !important; max-width: 100% !important; width: 100% !important; }
+    #soaBody { max-height: none !important; overflow: visible !important; padding: 0 !important; }
+    .modal { position: static !important; background: none !important; display: block !important; }
+    .modal:not(#soaModal) { display: none !important; }
+}
+
+        /* Bugas hint text */
+        /* Autocomplete dropdown */
+        .ac-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #dde3ec;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .ac-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f7fa;
+            transition: background 0.12s;
+        }
+        .ac-item:last-child { border-bottom: none; }
+        .ac-item:first-child { border-radius: 10px 10px 0 0; }
+        .ac-item:last-child  { border-radius: 0 0 10px 10px; }
+        .ac-item:only-child  { border-radius: 10px; }
+        .ac-item:hover { background: #f0f7f0; }
+        .ac-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d3a4a;
+        }
+        .ac-sub {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* SOA styles */
+        
+        .soa-name-link:hover { color: #0d47a1; }
+
+        .soa-header-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            border: 1px solid #c8e6c9;
+        }
+        .soa-header-box h3 { margin: 0 0 4px; font-size: 17px; color: #1b5e20; }
+        .soa-header-box p  { margin: 2px 0; font-size: 12px; color: #555; }
+
+        .soa-summary-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .soa-sum-box {
+            flex: 1;
+            min-width: 100px;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+        .soa-sum-box .lbl { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+        .soa-sum-box .val { font-size: 16px; font-weight: 700; margin-top: 3px; }
+        .soa-green  { color: #2e7d32; }
+        .soa-blue   { color: #1565c0; }
+        .soa-orange { color: #e65100; }
+        .soa-purple { color: #6a1b9a; }
+        .soa-red    { color: #c62828; }
+
+        .soa-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 16px 0 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .soa-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .soa-table thead th {
+            background: #f0f4f0;
+            padding: 7px 10px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #666;
+        }
+        .soa-table tbody td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #f5f7fa;
+            color: #2d3a4a;
+        }
+        .soa-table tbody tr:last-child td { border-bottom: none; }
+        .soa-table tbody tr:hover { background: #fafcfa; }
+
+        .soa-pill {
+            font-size: 11px;
+            padding: 2px 9px;
+            border-radius: 99px;
+            font-weight: 500;
+        }
+        .soa-pill-paid    { background: #e8f5e9; color: #2e7d32; }
+        .soa-pill-pending { background: #fff3e0; color: #e65100; }
+        .soa-pill-unpaid  { background: #ffebee; color: #c62828; }
+
+        .soa-balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 14px;
+        }
+        .soa-balance-label { font-size: 13px; font-weight: 600; color: #2d3a4a; }
+        .soa-balance-val   { font-size: 18px; font-weight: 700; }
+
+        .bugas-hint {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 400;
+            margin-left: 4px;
+        }
+    </style>
+    
+</head>
+<body>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW registered:', reg.scope))
+        .catch(err => console.error('SW error:', err));
+    });
+  }
+</script>
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+  import { getDatabase, ref, push, set, onValue, remove }
+    from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYuMf6pzysFgBIQyjbE8zTADJp1TpdV4M",
+    authDomain: "ae-ricemill26.firebaseapp.com",
+    databaseURL: "https://ae-ricemill26-default-rtdb.firebaseio.com",
+    projectId: "ae-ricemill26",
+    storageBucket: "ae-ricemill26.firebasestorage.app",
+    messagingSenderId: "591827466085",
+    appId: "1:591827466085:web:2125b5e65d0e11954cd38c",
+    measurementId: "G-XVT9BHRX0Q"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  getAnalytics(app);
+
+  window.db      = getDatabase(app);
+  window.ref     = ref;
+  window.push    = push;
+  window._set    = set;
+  window.onValue = onValue;
+  window.remove  = remove;
+</script>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>AE RiceMill</span>
+                
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-section="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li data-section="palay">
+                    <i class="fas fa-wheat-awn"></i>
+                    <span>Palay Received</span>
+                </li>
+                <li data-section="milling">
+                    <i class="fas fa-industry"></i>
+                    <span>Daily Milling</span>
+                </li>
+                <li data-section="payments">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Payments</span>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>&copy; 2026 AE Ricemill</p>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="section-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="date-time">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="current-date"></span>
+                    </div>
+                   
+                </div>
+            </header>
+
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="section active">
+
+                <!-- Stat Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card" style="--accent: #4CAF50;">
+                        <div class="stat-icon"><i class="fas fa-wheat-awn"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Palay</h3>
+                            <p id="total-palay">0 sacks</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="--accent: #2196F3;">
+                        <div class="stat-icon"><i class="fas fa-industry"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Milled</h3>
+                            <p id="total-milled">0 kg</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="--accent: #FF9800;">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3>Customers</h3>
+                            <p id="total-customers">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="--accent: #9C27B0;">
+                        <div class="stat-icon"><i class="fas fa-peso-sign"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Revenue</h3>
+                            <p id="total-revenue">₱0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Weekly Palay Received</h3>
+                        <div style="height: 250px;">
+                            <canvas id="weeklyPalayChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Payment Status Overview</h3>
+                        <div style="height: 250px;">
+                            <canvas id="paymentStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Milling Trends -->
+                <div class="card" style="margin-top: 20px;">
+                    <h3>Daily Milling Trends</h3>
+                    <div style="height: 300px;">
+                        <canvas id="millingTrendsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- MONTHLY SUMMARY PANEL -->
+                <div class="monthly-panel">
+
+                    <div class="mp-header-row">
+                        <h3 style="margin:0;"><i class="fas fa-calendar-alt" style="color:#4CAF50;margin-right:8px;"></i>Monthly Summary</h3>
+                        <button class="mp-btn-pdf" onclick="mpPrintPDF()">
+                            <i class="fas fa-file-pdf" style="margin-right:6px;"></i>Print PDF
+                        </button>
+                    </div>
+
+                    <!-- Date filters -->
+                    <div class="mp-filter-row">
+                        <div class="mp-filter-group">
+                            <span class="mp-label">Start Date</span>
+                            <input class="mp-input" type="date" id="mpStartDate">
+                        </div>
+                        <div class="mp-filter-group">
+                            <span class="mp-label">End Date</span>
+                            <input class="mp-input" type="date" id="mpEndDate">
+                        </div>
+                        <button class="mp-btn-view" onclick="mpApplyFilter()">
+                            <i class="fas fa-search" style="margin-right:6px;"></i>View Data
+                        </button>
+                    </div>
+
+                    <!-- Found bar -->
+                    <div class="mp-found-bar" id="mpFoundBar"></div>
+
+                    <!-- Metric cards -->
+                    <div class="mp-metrics-grid" id="mpMetricsGrid">
+                        <div class="mp-metric">
+                            <p class="mp-metric-label">Palay Sacks</p>
+                            <p class="mp-metric-value mp-green" id="mpPalay">—</p>
+                        </div>
+                        <div class="mp-metric">
+                            <p class="mp-metric-label">Milled (kg)</p>
+                            <p class="mp-metric-value mp-blue" id="mpMilled">—</p>
+                        </div>
+                        <div class="mp-metric">
+                            <p class="mp-metric-label">Revenue</p>
+                            <p class="mp-metric-value mp-purple" id="mpRevenue">—</p>
+                        </div>
+                        <div class="mp-metric">
+                            <p class="mp-metric-label">Milling Records</p>
+                            <p class="mp-metric-value mp-orange" id="mpCust">—</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs + rows (hidden until View Data clicked) -->
+                    <div id="mpTabArea" style="display:none;">
+                        <div class="mp-tab-row">
+                            <button class="mp-tab-btn active" id="mpTabPayments"  onclick="mpSwitchTab('payments')">
+                                <i class="fas fa-credit-card"></i> Payments
+                            </button>
+                            <button class="mp-tab-btn" id="mpTabMilling"   onclick="mpSwitchTab('milling')">
+                                <i class="fas fa-industry"></i> Milling
+                            </button>
+                            <button class="mp-tab-btn" id="mpTabPalay"     onclick="mpSwitchTab('palay')">
+                                <i class="fas fa-wheat-awn"></i> Palay
+                            </button>
+                        </div>
+                        <div class="mp-rows-section" id="mpRowsSection"></div>
+                    </div>
+
+                </div>
+                <!-- END MONTHLY SUMMARY PANEL -->
+
+            </section>
+
+            <!-- Palay Received Section -->
+            <section id="palay" class="section">
+                <div class="section-header">
+                    <button class="btn btn-primary" onclick="openModal('palayModal')">
+                        <i class="fas fa-plus"></i> Add Palay Record
+                    </button>
+                    <button class="btn btn-export" onclick="exportPalayReport()">
+                        <i class="fas fa-file-export"></i> Export Report
+                    </button>
+                </div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Palay Records</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="palaySearch" placeholder="Search records..." onkeyup="searchTable('palayTable', this.value)">
+                        </div>
+                    </div>
+                    <table id="palayTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Date</th><th>Name</th>
+                                <th>Sacks</th><th>Kilo</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="palayTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Daily Milling Section -->
+            <section id="milling" class="section">
+                <div class="section-header">
+                    <button class="btn btn-primary" onclick="openModal('millingModal')">
+                        <i class="fas fa-plus"></i> Add Milling Record
+                    </button>
+                    <button class="btn btn-export" onclick="exportMillingReport()">
+                        <i class="fas fa-file-export"></i> Export Report
+                    </button>
+                </div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Daily Milling Records</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="millingSearch" placeholder="Search records..." onkeyup="searchTable('millingTable', this.value)">
+                        </div>
+                    </div>
+                    <table id="millingTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Date</th><th>Name</th><th>Contact</th><th>Address</th>
+                                <th>Palay (sacks)</th><th>Bugas (kg)</th><th>Rate</th><th>Amount</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="millingTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Payments Section -->
+            <section id="payments" class="section">
+                <div class="section-header">
+                    <button class="btn btn-primary" onclick="openModal('paymentModal')">
+                        <i class="fas fa-plus"></i> Add Payment
+                    </button>
+                    <button class="btn btn-export" onclick="exportPaymentReport()">
+                        <i class="fas fa-file-export"></i> Export Report
+                    </button>
+                </div>
+                <div class="payment-stats">
+                    <div class="payment-stat-card paid">
+                        <i class="fas fa-check-circle"></i>
+                        <div><h4>Paid</h4><p id="paid-count">0</p></div>
+                    </div>
+                    <div class="payment-stat-card pending">
+                        <i class="fas fa-clock"></i>
+                        <div><h4>Pending</h4><p id="pending-count">0</p></div>
+                    </div>
+                    <div class="payment-stat-card unpaid">
+                        <i class="fas fa-times-circle"></i>
+                        <div><h4>Unpaid</h4><p id="unpaid-count">0</p></div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Payment Records</h3>
+                        <div class="filter-group">
+                            <select id="paymentFilter" onchange="filterPayments()">
+                                <option value="all">All Status</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="unpaid">Unpaid</option>
+                            </select>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="paymentSearch" placeholder="Search payments..." onkeyup="searchTable('paymentTable', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <table id="paymentTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Date</th><th>Milling Record</th><th>Description</th>
+                                <th>Amount</th><th>Status</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ══════════════ MODALS ══════════════ -->
+
+    <!-- Palay Modal -->
+    <div id="palayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="palayModalTitle">Add Palay Record</h2>
+                <button class="close-btn" onclick="closeModal('palayModal')">&times;</button>
+            </div>
+            <form id="palayForm" onsubmit="savePalay(event)">
+                <input type="hidden" id="palayId">
+                <div class="form-group">
+                    <label for="palayDate">Date</label>
+                    <input type="date" id="palayDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="palayName">Name</label>
+                    <input type="text" id="palayName" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label for="palayContact">Contact</label>
+                    <input type="text" id="palayContact" placeholder="Enter contact number" required>
+                </div>
+                <div class="form-group">
+                    <label for="palayAddress">Address</label>
+                    <input type="text" id="palayAddress" placeholder="Enter address" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="palaySacks">Palay Sacks</label>
+                        <input type="number" id="palaySacks" placeholder="Number of sacks" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="palayKilo">Kilo</label>
+                        <input type="number" id="palayKilo" placeholder="Total kilos" min="1" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('palayModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Milling Modal -->
+    <div id="millingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="millingModalTitle">Add Milling Record</h2>
+                <button class="close-btn" onclick="closeModal('millingModal')">&times;</button>
+            </div>
+            <form id="millingForm" onsubmit="saveMilling(event)">
+                <input type="hidden" id="millingId">
+                <div class="form-group">
+                    <label for="millingDate">Date</label>
+                    <input type="date" id="millingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="millingName">Name</label>
+                    <input type="text" id="millingName" placeholder="Enter name" required>
+                </div>
+                <div class="form-group">
+                    <label for="millingContact">Contact</label>
+                    <input type="text" id="millingContact" placeholder="Enter contact number" required>
+                </div>
+                <div class="form-group">
+                    <label for="millingAddress">Address</label>
+                    <input type="text" id="millingAddress" placeholder="Enter address" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="millingPalay">Palay (kg)</label>
+                        <input type="number" id="millingPalay" placeholder="Palay in kilos" min="1" step="0.01" required oninput="calculateMillingAmount()">
+                    </div>
+                    <div class="form-group">
+                        <!-- ✅ CHANGED: type="text" to allow "27/18" format -->
+                        <label for="millingBugas">
+                            Bugas (kg)
+                            <span class="bugas-hint">e.g. 27/18</span>
+                        </label>
+                        <input type="text" id="millingBugas" placeholder="e.g. 27/18" required oninput="calculateMillingAmount()">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="millingRate">Rate (₱)</label>
+                        <select id="millingRate" required onchange="calculateMillingAmount()">
+                            <option value="2">₱2.00 (Standard)</option>
+                            <option value="2.50">₱2.50</option>
+                            <option value="3">₱3.00</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="millingAmount">Total Amount (₱)</label>
+                        <input type="number" id="millingAmount" placeholder="Auto-calculated" min="0" step="0.01" readonly>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('millingModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="paymentModalTitle">Add Payment</h2>
+                <button class="close-btn" onclick="closeModal('paymentModal')">&times;</button>
+            </div>
+            <form id="paymentForm" onsubmit="savePayment(event)">
+                <input type="hidden" id="paymentId">
+                <div class="form-group">
+                    <label for="paymentDate">Date</label>
+                    <input type="date" id="paymentDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentMilling">Milling Record</label>
+                    <select id="paymentMilling" required>
+                        <option value="">Select Milling Record</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentDescription">Description</label>
+                    <input type="text" id="paymentDescription" placeholder="Payment description" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentAmount">Amount (₱)</label>
+                    <input type="number" id="paymentAmount" placeholder="Amount paid" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentStatus">Status</label>
+                    <select id="paymentStatus" required>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-btn" onclick="closeModal('deleteModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this record? This action cannot be undone.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statement of Account Modal -->
+    <div id="soaModal" class="modal">
+        <div class="modal-content" style="max-width:680px;width:95%;">
+            <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <h2 id="soaTitle" style="margin:0;font-size:16px;">Statement of Account</h2>
+                <div style="display:flex;gap:8px;">
+                    <button class="mp-btn-pdf" onclick="soaPrint()" style="font-size:12px;padding:6px 14px;">
+                        <i class="fas fa-print" style="margin-right:5px;"></i>Print
+                    </button>
+                    <button class="close-btn" onclick="closeModal('soaModal')" style="position:static;font-size:22px;line-height:1;">&times;</button>
+                </div>
+            </div>
+            <div id="soaBody" style="max-height:70vh;overflow-y:auto;padding:4px 2px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <!-- App logic -->
+    <script src="app.js"></script>
+
+    <!-- MONTHLY SUMMARY PANEL — JavaScript -->
+    <script>
+        
+    (function () {
+
+        /* ── State ── */
+        var mpData = { palay: [], milling: [], payments: [] };
+        var mpFiltered = { palay: [], milling: [], payments: [] };
+        var mpActiveTab = 'payments';
+
+        /* ── Set default dates (current month) ── */
+        function mpSetDefaultDates() {
+            var now = new Date();
+            var y = now.getFullYear(), m = now.getMonth();
+            var first = new Date(y, m, 1);
+            var last  = new Date(y, m + 1, 0);
+            document.getElementById('mpStartDate').value = first.toISOString().slice(0, 10);
+            document.getElementById('mpEndDate').value   = last.toISOString().slice(0, 10);
+        }
+
+        /* ── Date range check ── */
+        function mpInRange(dateStr, s, e) {
+            if (!dateStr) return false;
+            var d = dateStr.slice(0, 10);
+            return d >= s && d <= e;
+        }
+
+        /* ── Currency formatter ── */
+        function mpFmt(n) {
+            return '₱' + (parseFloat(n) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        /* ── Apply filter (View Data button) ── */
+        window.mpApplyFilter = function () {
+            var s = document.getElementById('mpStartDate').value;
+            var e = document.getElementById('mpEndDate').value;
+            if (!s || !e) return;
+
+            mpFiltered.palay     = mpData.palay.filter(function (r) { return mpInRange(r.date, s, e); });
+            mpFiltered.milling   = mpData.milling.filter(function (r) { return mpInRange(r.date, s, e); });
+            mpFiltered.payments  = mpData.payments.filter(function (r) { return mpInRange(r.date, s, e); });
+
+            var total = mpFiltered.palay.length + mpFiltered.milling.length + mpFiltered.payments.length;
+
+            var fb = document.getElementById('mpFoundBar');
+            fb.style.display = 'block';
+            fb.textContent = 'Found ' + total + ' record' + (total !== 1 ? 's' : '') +
+                             ' from ' + s + ' to ' + e + '.';
+
+            /* Update metric cards */
+            var totalSacks   = mpFiltered.palay.reduce(function (a, r) { return a + (parseFloat(r.sacks) || 0); }, 0);
+            var totalMilled  = mpFiltered.milling.reduce(function (a, r) { return a + (parseFloat(r.bugas) || 0); }, 0);
+            var totalRevenue = mpFiltered.milling.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+
+            document.getElementById('mpPalay').textContent   = totalSacks;
+            document.getElementById('mpMilled').textContent  = totalMilled.toFixed(1);
+            document.getElementById('mpRevenue').textContent = mpFmt(totalRevenue);
+            document.getElementById('mpCust').textContent    = mpFiltered.milling.length;
+
+            document.getElementById('mpMetricsGrid').style.display = 'grid';
+            document.getElementById('mpTabArea').style.display = 'block';
+
+            /* Reset to payments tab */
+            mpActiveTab = 'payments';
+            ['payments', 'milling', 'palay'].forEach(function (t) {
+                var btn = document.getElementById('mpTab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (btn) btn.classList.toggle('active', t === 'payments');
+            });
+            mpRenderRows();
+        };
+
+        /* ── Switch tab ── */
+        window.mpSwitchTab = function (tab) {
+            mpActiveTab = tab;
+            ['payments', 'milling', 'palay'].forEach(function (t) {
+                var btn = document.getElementById('mpTab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (btn) btn.classList.toggle('active', t === tab);
+            });
+            mpRenderRows();
+        };
+
+        /* ── Render rows for active tab ── */
+        function mpRenderRows() {
+            var sec = document.getElementById('mpRowsSection');
+            var s   = document.getElementById('mpStartDate').value;
+            var e   = document.getElementById('mpEndDate').value;
+            var label = s + ' → ' + e;
+
+            if (mpActiveTab === 'payments') {
+                var rows = mpFiltered.payments;
+                if (!rows.length) {
+                    sec.innerHTML = '<p class="mp-empty-msg">No payment records in this range</p>';
+                    return;
+                }
+                var paid    = rows.filter(function (r) { return r.status === 'paid'; });
+                var pend    = rows.filter(function (r) { return r.status === 'pending'; });
+                var unp     = rows.filter(function (r) { return r.status === 'unpaid'; });
+                var sumPaid = paid.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+                var sumPend = pend.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+                var sumUnp  = unp.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+                var grand   = rows.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+
+                sec.innerHTML =
+                    '<p class="mp-rows-label">Payments — ' + label + '</p>' +
+                    '<div class="mp-cat-grid">' +
+                    '<div class="mp-cat-box"><div class="lbl">Paid (' + paid.length + ')</div><div class="val">' + mpFmt(sumPaid) + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Pending (' + pend.length + ')</div><div class="val">' + mpFmt(sumPend) + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Unpaid (' + unp.length + ')</div><div class="val">' + mpFmt(sumUnp) + '</div></div>' +
+                    '</div>' +
+                    rows.map(function (r) {
+                        return '<div class="mp-row-item">' +
+                            '<span class="mp-row-name">' + (r.description || '—') + '</span>' +
+                            '<span style="display:flex;gap:8px;align-items:center;">' +
+                            '<span class="mp-row-val">' + mpFmt(r.amount) + '</span>' +
+                            '<span class="mp-pill mp-pill-' + (r.status || 'unpaid') + '">' + (r.status || 'unpaid') + '</span>' +
+                            '</span></div>';
+                    }).join('') +
+                    '<div class="mp-grand-total"><span class="mp-grand-label">Grand Total</span><span class="mp-grand-val">' + mpFmt(grand) + '</span></div>';
+
+            } else if (mpActiveTab === 'milling') {
+                var rows = mpFiltered.milling;
+                if (!rows.length) { sec.innerHTML = '<p class="mp-empty-msg">No milling records in this range</p>'; return; }
+                var totalKg  = rows.reduce(function (a, r) { return a + (parseFloat(r.bugas) || 0); }, 0);
+                var totalAmt = rows.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+
+                sec.innerHTML =
+                    '<p class="mp-rows-label">Milling — ' + label + '</p>' +
+                    '<div class="mp-cat-grid">' +
+                    '<div class="mp-cat-box"><div class="lbl">Records</div><div class="val">' + rows.length + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Bugas (kg)</div><div class="val">' + totalKg.toFixed(1) + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Revenue</div><div class="val">' + mpFmt(totalAmt) + '</div></div>' +
+                    '</div>' +
+                    rows.map(function (r) {
+                        return '<div class="mp-row-item">' +
+                            '<span class="mp-row-name">' + (r.name || '—') +
+                            ' <span style="font-size:11px;color:#bbb;">' + (r.date || '') + '</span></span>' +
+                            '<span class="mp-row-val">' + (r.bugasRaw || parseFloat(r.bugas || 0).toFixed(1)) + ' · ' + mpFmt(r.amount) + ' · ₱' + (r.rate || 2) + '/kg</span>' +
+                            '</div>';
+                    }).join('') +
+                    '<div class="mp-grand-total"><span class="mp-grand-label">Total Revenue</span><span class="mp-grand-val">' + mpFmt(totalAmt) + '</span></div>';
+
+            } else if (mpActiveTab === 'palay') {
+                var rows = mpFiltered.palay;
+                if (!rows.length) { sec.innerHTML = '<p class="mp-empty-msg">No palay records in this range</p>'; return; }
+                var totalSacks = rows.reduce(function (a, r) { return a + (parseFloat(r.sacks) || 0); }, 0);
+                var totalKilo  = rows.reduce(function (a, r) { return a + (parseFloat(r.kilo) || 0); }, 0);
+
+                sec.innerHTML =
+                    '<p class="mp-rows-label">Palay Received — ' + label + '</p>' +
+                    '<div class="mp-cat-grid">' +
+                    '<div class="mp-cat-box"><div class="lbl">Records</div><div class="val">' + rows.length + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Total Sacks</div><div class="val">' + totalSacks + '</div></div>' +
+                    '<div class="mp-cat-box"><div class="lbl">Total Kilo</div><div class="val">' + totalKilo.toFixed(1) + ' kg</div></div>' +
+                    '</div>' +
+                    rows.map(function (r) {
+                        return '<div class="mp-row-item">' +
+                            '<span class="mp-row-name">' + (r.name || '—') +
+                            ' <span style="font-size:11px;color:#bbb;">' + (r.date || '') + '</span></span>' +
+                            '<span class="mp-row-val">' + (r.sacks || 0) + ' sacks · ' + parseFloat(r.kilo || 0).toFixed(1) + ' kg</span>' +
+                            '</div>';
+                    }).join('');
+            }
+        }
+
+        /* ── Print PDF ── */
+        window.mpPrintPDF = function () {
+            var s = document.getElementById('mpStartDate').value;
+            var e = document.getElementById('mpEndDate').value;
+            var ps  = mpFiltered.palay;
+            var ms  = mpFiltered.milling;
+            var pms = mpFiltered.payments;
+
+            var totalSacks   = ps.reduce(function (a, r) { return a + (parseFloat(r.sacks) || 0); }, 0);
+            var totalMilled  = ms.reduce(function (a, r) { return a + (parseFloat(r.bugas) || 0); }, 0);
+            var totalRevenue = ms.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+            var totalPaid    = pms.filter(function (r) { return r.status === 'paid'; }).reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+            var totalPend    = pms.filter(function (r) { return r.status === 'pending'; }).reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+            var totalUnpaid  = pms.filter(function (r) { return r.status === 'unpaid'; }).reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+            var grandPay     = pms.reduce(function (a, r) { return a + (parseFloat(r.amount) || 0); }, 0);
+
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+                '<title>AE Ricemill Report ' + s + ' to ' + e + '</title>' +
+                '<style>' +
+                'body{font-family:Arial,sans-serif;font-size:13px;color:#222;padding:30px;}' +
+                'h1{font-size:22px;margin:0 0 4px;color:#2d3a4a;}' +
+                '.sub{color:#777;font-size:12px;margin:0 0 24px;}' +
+                'h2{font-size:14px;margin:20px 0 10px;border-bottom:2px solid #4CAF50;padding-bottom:4px;color:#2d3a4a;}' +
+                '.cat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}' +
+                '.cat-box{border:1px solid #dde3ec;border-radius:8px;padding:8px 16px;min-width:110px;background:#f8fafc;}' +
+                '.cat-box .lbl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;}' +
+                '.cat-box .val{font-size:16px;font-weight:700;color:#6a1b9a;margin-top:2px;}' +
+                'table{width:100%;border-collapse:collapse;margin-top:6px;}' +
+                'th{background:#f0f4f0;text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#555;}' +
+                'td{padding:6px 10px;border-bottom:1px solid #f0f4f8;font-size:12px;}' +
+                'tr:last-child td{border-bottom:none;}' +
+                '.grand{font-weight:700;font-size:15px;color:#6a1b9a;text-align:right;margin-top:8px;padding-top:6px;border-top:2px solid #eee;}' +
+                '.pill{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;}' +
+                '.paid{background:#e8f5e9;color:#2e7d32;}.pending{background:#fff3e0;color:#e65100;}.unpaid{background:#ffebee;color:#c62828;}' +
+                '@media print{body{padding:15px;}h2{break-before:auto;}}' +
+                '</style></head><body>' +
+                '<h1>AE Ricemill — Report</h1>' +
+                '<p class="sub">Period: ' + s + ' to ' + e + ' &nbsp;|&nbsp; Generated: ' + new Date().toLocaleDateString('en-PH') + '</p>' +
+
+                '<h2>Summary</h2>' +
+                '<div class="cat-row">' +
+                '<div class="cat-box"><div class="lbl">Palay Sacks</div><div class="val">' + totalSacks + '</div></div>' +
+                '<div class="cat-box"><div class="lbl">Milled (kg)</div><div class="val">' + totalMilled.toFixed(1) + '</div></div>' +
+                '<div class="cat-box"><div class="lbl">Revenue</div><div class="val">' + mpFmt(totalRevenue) + '</div></div>' +
+                '</div>' +
+
+                '<h2>Payments</h2>' +
+                '<div class="cat-row">' +
+                '<div class="cat-box"><div class="lbl">Paid (' + pms.filter(function(r){return r.status==='paid';}).length + ')</div><div class="val">' + mpFmt(totalPaid) + '</div></div>' +
+                '<div class="cat-box"><div class="lbl">Pending (' + pms.filter(function(r){return r.status==='pending';}).length + ')</div><div class="val">' + mpFmt(totalPend) + '</div></div>' +
+                '<div class="cat-box"><div class="lbl">Unpaid (' + pms.filter(function(r){return r.status==='unpaid';}).length + ')</div><div class="val">' + mpFmt(totalUnpaid) + '</div></div>' +
+                '</div>' +
+                '<table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead><tbody>' +
+                pms.map(function (r) {
+                    return '<tr><td>' + (r.date||'') + '</td><td>' + (r.description||'') + '</td><td>' + mpFmt(r.amount) + '</td>' +
+                        '<td><span class="pill ' + (r.status||'unpaid') + '">' + (r.status||'unpaid') + '</span></td></tr>';
+                }).join('') +
+                '</tbody></table>' +
+                '<p class="grand">Grand Total: ' + mpFmt(grandPay) + '</p>' +
+
+                '<h2>Daily Milling</h2>' +
+                '<table><thead><tr><th>Date</th><th>Name</th><th>Contact</th><th>Address</th><th>Palay (kg)</th><th>Bugas</th><th>Rate</th><th>Amount</th></tr></thead><tbody>' +
+                ms.map(function (r) {
+                    return '<tr><td>' + (r.date||'') + '</td><td>' + (r.name||'—') + '</td><td>' + (r.contact||'') + '</td><td>' + (r.address||'') + '</td>' +
+                        '<td>' + parseFloat(r.palay||0).toFixed(1) + '</td><td>' + (r.bugasRaw || parseFloat(r.bugas||0).toFixed(1)) + '</td><td>₱' + (r.rate||2) + '</td><td>' + mpFmt(r.amount) + '</td></tr>';
+                }).join('') +
+                '</tbody></table>' +
+                '<p class="grand">Total Revenue: ' + mpFmt(totalRevenue) + '</p>' +
+
+                '<h2>Palay Received</h2>' +
+                '<table><thead><tr><th>Date</th><th>Name</th><th>Contact</th><th>Address</th><th>Sacks</th><th>Kilo (kg)</th></tr></thead><tbody>' +
+                ps.map(function (r) {
+                    return '<tr><td>' + (r.date||'') + '</td><td>' + (r.name||'—') + '</td><td>' + (r.contact||'') + '</td><td>' + (r.address||'') + '</td>' +
+                        '<td>' + (r.sacks||0) + '</td><td>' + parseFloat(r.kilo||0).toFixed(1) + '</td></tr>';
+                }).join('') +
+                '</tbody></table>' +
+
+                '<script>window.onload=function(){window.print();};<\/script>' +
+                '</body></html>';
+
+            var w = window.open('', '_blank');
+            w.document.write(html);
+            w.document.close();
+        };
+
+        /* ── Load data from Firebase ── */
+        function mpLoadFromFirebase() {
+            if (!window.db || !window.ref || !window.onValue) {
+                setTimeout(mpLoadFromFirebase, 400);
+                return;
+            }
+            function load(path, key) {
+                window.onValue(window.ref(window.db, path), function (snap) {
+                    mpData[key] = Object.values(snap.val() || {});
+                });
+            }
+            load('palayRecords', 'palay');
+            load('millingRecords', 'milling');
+            load('payments', 'payments');
+        }
+
+        /* ── Init ── */
+        mpSetDefaultDates();
+        mpLoadFromFirebase();
+
+    })();
+    </script>
+
+</body>
+</html>
